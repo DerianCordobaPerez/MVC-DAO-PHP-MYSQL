@@ -7,16 +7,19 @@ class Connection {
     private function __construct() {}
 
     private static ?PDO $connection = null;
-    private static string $string_connection = "mysql:host=localhost;dbname=practica_04_pow";
-    private static string $user = 'root', $password = "derian2020";
 
     /**
      * @return PDO|null
      */
     public static function connect_database(): ?PDO {
+        include_once 'configuration/Configuration.php';
         $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-        if(!isset(self::$connection))
-            self::$connection = new PDO(self::$string_connection, self::$user, self::$password, $pdo_options);
+        try {
+            if(self::$connection === null)
+                self::$connection = new PDO("mysql:host=".Configuration::get_host().";dbname=".Configuration::get_database(), Configuration::get_user(), Configuration::get_password(), $pdo_options);
+        } catch (PDOException $exception) {
+            die($exception->getMessage());
+        }
         return self::$connection;
     }
 

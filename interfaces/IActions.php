@@ -1,22 +1,22 @@
 <?php
 interface IActions {
     /**
-     * @param $model
+     * @param mixed $model
      * @return mixed
      */
-    public function add($model): mixed;
+    public function add(mixed $model): mixed;
 
     /**
-     * @param $model
+     * @param mixed $model
      * @return mixed
      */
-    public function edit($model): mixed;
+    public function edit(mixed $model): mixed;
 
     /**
-     * @param $model
+     * @param mixed $model
      * @return mixed
      */
-    public function delete($model): mixed;
+    public function delete(mixed $model): mixed;
 
     /**
      * @return mixed
@@ -24,9 +24,9 @@ interface IActions {
     public function get_content(): mixed;
 
     /**
-     * @param $model
+     * @param mixed $id
      * @return mixed
      */
-    public function get_one($model): mixed;
+    public function get_one(mixed $id): mixed;
 
 }
