@@ -1,4 +1,5 @@
 <?php
     include_once 'views/IndexView.php';
-    $indexView = new IndexView();
-    $indexView->show_index('Practica #04');
+    include_once 'controllers/IndexController.php';
+    (new IndexView())->show_index('Practica #04');
+    (new IndexController)->init();

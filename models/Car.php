@@ -58,22 +58,10 @@ class Car {
     /**
      * @return string
      */
-    public function get_photo(): string {$this->photo;}
+    public function get_photo(): string {return $this->photo;}
 
     /**
      * @param string $photo
      */
     public function set_photo(string $photo): void {$this->photo = $photo;}
-
-    /**
-     * @param Car $car
-     * @param mixed $item
-     */
-    public static function set_car(Car $car, mixed $item): void {
-        $car->set_id($item['id']);
-        $car->set_license($item['email']);
-        $car->set_model($item['model']);
-        $car->set_brand($item['brand']);
-        $car->set_description($item['description']);
-    }
 }

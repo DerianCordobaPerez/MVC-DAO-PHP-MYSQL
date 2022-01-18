@@ -12,7 +12,7 @@ class Student {
      * @param string $photo
      */
     public function __construct(
-        private $id = 0, private $email = "", private $name = "", private $license = "", private $age = "", private $course = "", private $photo = ""
+        private $id = 0, private $email = "", private $name = "", private $license = "", private $age = 0, private $course = "", private $photo = ""
     ) {}
 
     /**

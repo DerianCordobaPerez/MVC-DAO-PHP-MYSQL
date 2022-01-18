@@ -16,12 +16,13 @@ class Input {
      * @param string $id
      * @return void
      */
-    public static function input(string $class, string $title_span, string $type, string $name, string $placeholder, string $value = '', $exist_span = true, string $id = "", string $license = "", string $values = ""): void {
+    public static function input(string $class, string $title_span, string $type, string $name, string $placeholder, string $value = '', $exist_span = true, $readonly = false, string $id = "", string $license = "", string $values = ""): void {
         Divs::open_div('input-group');
             if($exist_span) Span::span('input-group-text', $title_span);
             echo "<input class='$class' type='$type' name='$name' ";
-            if($type == 'number' || $type == 'text') echo $values;
-            if($id != "") echo " id='$id' ";
+            if($readonly) echo " readonly ";
+            if($type === 'number' || $type === 'text') echo $values;
+            if($id !== "") echo " id='$id' ";
             echo " placeholder='$placeholder' value='$value' required />";
         Divs::close_div();
     }

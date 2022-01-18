@@ -14,6 +14,10 @@ class Button {
         return "<button type='$type' class='$class' id='$id'>$title</button>";
     }
 
+    public static function button_modal(string $class, string $id, string $title, string $type = "button"): string {
+        return "<button type='$type' class='$class' id='$id' data-bs-toggle='modal' data-bs-target='#staticBackdrop'>$title</button>";
+    }
+
     /**
      * Componente button con extras
      * @param string $class

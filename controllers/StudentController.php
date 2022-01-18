@@ -1,69 +1,118 @@
 <?php
 use JetBrains\PhpStorm\NoReturn;
+include_once 'models/Student.php';
+include_once 'dao/StudentDao.php';
+include_once 'components/Alerts.php';
+include_once 'components/Divs.php';
+include_once 'views/layouts/Back.php';
+include_once 'helpers/upload_image.php';
 class StudentController {
 
     /**
      * StudentController constructor.
      */
-    public function __construct() {
-        include_once 'models/Student.php';
-        include_once 'dao/StudentDao.php';
-        include_once 'components/Title.php';
-        include_once 'helpers/redirect_page.php';
+    public function __construct() {}
+    private static bool $delete = false;
+
+    #[NoReturn] public static function init(): void {
+        $action = "";
+        if(isset($_REQUEST['action'])) $action = $_REQUEST['action'];
+        if($action === 'add') self::insert_student();
+        else if($action === 'edit') self::render_edit_form_student();
+        else if($action === 'update') self::update_student();
+        else if($action === 'delete') self::render_delete_message();
+        else if($action === 'put') self::delete_student();
+
+        if(!($action === 'edit') && !($action === 'delete')) echo "<script>window.location.href = 'index.php'</script>";
     }
 
     /**
-     * @param Student $student
+     *
      */
-    #[NoReturn] public function insert_student(Student $student): void {
-        $student_dao = new StudentDao();
-        if(!$student_dao->add($student))
-            Title::title_void('h2', 'No se ha podido registrar el estudiante', 'text-center link-danger');
-        else
-            Title::title_void('h2', 'Se registro correctamente el estudiante', 'text-center');
-        redirect();
+    #[NoReturn] private static function insert_student(): void {
+        $upload = validation_image();
+        if(!$upload)
+            echo 'ERROR / Ocurrio un problema al subir la imagen';
+        else if(move_uploaded_file($_FILES['photo']['tmp_name'], 'uploads/students/'.basename($_FILES['photo']['name']))) {
+            $student = new Student(
+                (int)$_POST['id'],
+                $_POST['email'],
+                $_POST['name'],
+                $_POST['license'],
+                (int)$_POST['age'],
+                $_POST['course'],
+                htmlspecialchars(basename($_FILES['photo']['name']))
+            );
+
+            if(!(new StudentDao())->add($student))
+                Alerts::alert('danger', 'No se ha podido registrar el estudiante');
+            else
+                Alerts::alert('success', 'Se registro correctamente el estudiante');
+        }
+    }
+    private static function render_delete_message(): void {
+        (new IndexView())->show_delete_message(self::get_student((int)$_GET['id']));
+    }
+
+    private static function delete_student(): void {
+        if(!(new StudentDao())->delete($_GET['id'])){
+            Alerts::alert('danger', 'No se ha podido eliminar el estudiante');
+            self::$delete = true;
+        } else
+            Alerts::alert('success', 'Se elimino correctamente el estudiante');
+    }
+
+    private static function render_edit_form_student(): void {
+        Divs::open_div('container bg-white');
+        (new IndexView())->show_content(self::get_student((int)$_GET['id']), 'student');
+        Divs::close_div();
+    }
+
+    #[NoReturn] public static function update_student(): void {
+        $upload = validation_image();
+        if(!$upload)
+            echo 'ERROR / Ocurrio un problema al subir la imagen';
+        else if(move_uploaded_file($_FILES['photo']['tmp_name'], 'uploads/students/'.basename($_FILES['photo']['name']))) {
+            $student = new Student(
+                (int)$_POST['id'],
+                $_POST['email'],
+                $_POST['name'],
+                $_POST['license'],
+                (int)$_POST['age'],
+                $_POST['course'],
+                htmlspecialchars(basename($_FILES['photo']['name']))
+            );
+            if (!(new StudentDao())->edit($student))
+                Alerts::alert('danger', 'No se ha podido actualizar el estudiante');
+            else
+                Alerts::alert('success', 'Se actualizo correctamente el estudiante');
+        }
     }
 
     /**
-     * @param Student $student
+     * @return array
      */
-    #[NoReturn] public function delete_student(Student $student): void {
-        $student_dao = new StudentDao();
-        if(!$student_dao->delete($student))
-            Title::title_void('h2', 'No se ha podido eliminar el estudiante', 'text-center link-danger');
-        else
-            Title::title_void('h2', 'Se elimino correctamente el estudiante', 'text-center');
-        redirect();
-    }
-
-    /**
-     * @param Student $student
-     */
-    #[NoReturn] public function update_student(Student $student): void {
-        $student_dao = new StudentDao();
-        if(!$student_dao->edit($student))
-            Title::title_void('h2', 'No se ha podido actualizar el estudiante', 'text-center link-danger');
-        else
-            Title::title_void('h2', 'Se actualizo correctamente el estudiante', 'text-center');
-        redirect();
-    }
-
     public function get_all_students(): array {
-        $student_dao = new StudentDao();
-        return $student_dao->get_content();
+        return (new StudentDao())->get_content();
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @return Student|null
      */
-    public function get_student($id): ?Student {
-        $student_dao = new StudentDao();
-        if(!($student = $student_dao->get_one($id)))
-            Title::title_void('h2', 'No se ha encontrado el estudiante con el id '.$id, 'text-center link-danger');
+    private static function get_student(int $id): ?Student {
+        if(!($student = (new StudentDao())->get_one($id)))
+            Alerts::alert('success', 'No se encontro el estudiante');
         else
-            Title::title_void('h2', 'Estudiante encontrado:  '.$student->get_name(), 'text-center');
+            Alerts::alert('success', 'Estudiante encontrado: '.$student->get_name());
         return $student;
+    }
+
+    /**
+     * @return int
+     */
+    public function get_total_student(): int {
+        return (new StudentDao())->get_total() + (self::$delete ? 2 : 1);
     }
 
 }

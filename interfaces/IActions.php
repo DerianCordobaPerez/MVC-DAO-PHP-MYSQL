@@ -16,7 +16,7 @@ interface IActions {
      * @param mixed $model
      * @return mixed
      */
-    public function delete(mixed $model): mixed;
+    public function delete(int $id): mixed;
 
     /**
      * @return mixed
@@ -27,6 +27,6 @@ interface IActions {
      * @param mixed $id
      * @return mixed
      */
-    public function get_one(mixed $id): mixed;
+    public function get_one(int $id): mixed;
 
 }
